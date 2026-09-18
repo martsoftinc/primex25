@@ -112,7 +112,7 @@
       max-width: 80rem;
       margin: 0 auto;
       padding: 0 1rem;
-      height: 4.25rem;
+      height: 5rem;            /* taller to match larger logo */
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -122,7 +122,7 @@
     @media (min-width: 640px) {
       .site-header-inner {
         padding: 0 1.25rem;
-        height: 4.75rem;
+        height: 5.25rem;
       }
     }
 
@@ -149,23 +149,19 @@
     }
 
     .header-logo img {
-      height: 2.5rem;
+      height: 3.4rem;          /* bigger on mobile */
       width: auto;
       object-fit: contain;
       display: block;
       transition: transform 0.25s ease;
     }
 
-    .header-logo:hover img {
-      transform: scale(1.03);
-    }
-
     @media (min-width: 640px) {
-      .header-logo img { height: 2.85rem; }
+      .header-logo img { height: 3.6rem; }
     }
 
     @media (min-width: 768px) {
-      .header-logo img { height: 3.15rem; }
+      .header-logo img { height: 5.15rem; }  /* keep desktop size */
     }
 
     /* =========================================================
@@ -535,7 +531,7 @@
     }
 
     .mobile-menu-header .brand img {
-      height: 2.5rem;
+      height: 5.5rem;
       width: auto;
       object-fit: contain;
     }

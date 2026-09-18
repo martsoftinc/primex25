@@ -5,11 +5,11 @@
 
           <div class="md:col-span-4">
             <div class="flex items-center gap-3 mb-6">
-              <img src="images/logo.jpeg" alt="Primex25 Trade &amp; Consult Ltd" class="h-12 w-auto object-contain rounded" />
-              <div>
+              <img src="images/logo.jpeg" alt="Primex25 Trade &amp; Consult Ltd" class="h-15 w-auto object-contain rounded" />
+              <!--<div>
                 <div class="font-semibold text-base">Primex25</div>
                 <div class="text-xs text-white/50 uppercase tracking-wider">Trade &amp; Consult Ltd</div>
-              </div>
+              </div> -->
             </div>
             <p class="text-sm text-white/60 leading-relaxed mb-6">
               Connecting opportunities. Building partnerships. Creating value.
@@ -98,7 +98,7 @@
     <div class="mobile-menu-header">
       <a href="index.php" class="brand">
         <img src="images/logo.jpeg" alt="Primex25" />
-        <span>Primex25</span>
+        <!--<span>Primex25</span> -->
       </a>
       <button type="button" id="mobile-menu-close" class="btn-menu" aria-label="Close menu">
         <span class="hamburger" aria-hidden="true">

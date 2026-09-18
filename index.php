@@ -6,7 +6,7 @@
   <!-- ===== HERO ===== -->
   <section id="home" class="hero-section relative flex items-center overflow-hidden bg-ev-dark">
     <div class="absolute inset-0 z-0">
-      <video autoplay loop muted playsinline class="w-full h-full object-cover" poster="https://cdn.prod.website-files.com/683d63758db3c51dd8a96ce0%2F689cbba34cfb3ad80d45c55a_evostel-1-hxz7rg3q-z82gyfsa_5tjljFHS-poster-00001.jpg">
+      <video autoplay loop muted playsinline class="w-full h-full object-cover" poster="https://static.tildacdn.net/tild3230-3131-4738-a432-313737626539/photo_2021-04-02_15-.jpg">
         <source src="intro.mp4" type="video/mp4" />
         <source src="https://cdn.prod.website-files.com/683d63758db3c51dd8a96ce0%2F689cbba34cfb3ad80d45c55a_evostel-1-hxz7rg3q-z82gyfsa_5tjljFHS-transcode.webm" type="video/webm" />
       </video>
@@ -323,7 +323,7 @@
           </h2>
           <p class="text-white/70 mb-6">Submit a structured commercial enquiry. We review all approaches for relevance. Submission does not guarantee engagement.</p>
           <div class="space-y-2 text-sm text-white/60">
-            <p>Plot 104, Farrar Avenue, Adabraka, Accra, Ghana</p>
+            <p>No. 135/5 Mahogany Street, West McCarthy Hill</p><p>Weija, Accra</p>
             <p>Digital Address: GS-0138-8305</p>
             <p><a href="mailto:info@primex25.com" class="text-ev-gold hover:underline">info@primex25.com</a> · <a href="https://wa.me/233558814552" class="text-ev-gold hover:underline">+233 55 881 4552</a></p>
           </div>

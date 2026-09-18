@@ -50,7 +50,7 @@ include 'header.php';
             </div>
             <div>
               <div class="text-xs uppercase tracking-wider text-gray-400 mb-1">Office</div>
-              <div class="text-ev-dark">Plot 104, Farrar Avenue, Adabraka<br />Accra, Ghana</div>
+              <div class="text-ev-dark">No. 135/5 Mahogany Street<br />West McCarthy Hill, Weija Accra</div>
               <div class="text-xs text-gray-500 mt-1">Digital Address: GS-0138-8305</div>
             </div>
             <div>
@@ -210,15 +210,12 @@ include 'header.php';
   </section>
 </main>
 <?php include 'footer.php'; ?>
-EOF
-
-cat > /home/workdir/artifacts/process-enquiry.php << 'EOF'
 <?php
 /**
  * Primex25 enquiry processor
  * - Honeypot + basic rate limiting (session)
  * - Generates reference number
- * - Emails info@primex25.com
+ * - Sends via Gmail SMTP to mrtinfaith007@gmail.com
  * - Does not request/store sensitive KYC docs
  */
 
@@ -314,21 +311,118 @@ $body .= "\n" . str_repeat('-', 50) . "\n";
 $body .= "Note: Submission does not guarantee engagement.\n";
 $body .= "IP: " . ($_SERVER['REMOTE_ADDR'] ?? 'unknown') . "\n";
 
-$to = 'info@primex25.com';
-$subject = "[Primex25 Enquiry {$ref}] {$data['interest']} — {$data['company']}";
-$headers = [
-    'From: Primex25 Website <noreply@primex25.com>',
-    'Reply-To: ' . $data['fullName'] . ' <' . $data['email'] . '>',
-    'X-Mailer: Primex25-Enquiry-Form',
-    'Content-Type: text/plain; charset=UTF-8',
-];
+// ============================================================
+// SMTP CONFIG (Gmail) — sends to mrtinfaith007@gmail.com
+// ============================================================
+$smtp_host     = 'smtp.gmail.com';
+$smtp_port     = 465;
+$smtp_user     = 'martinfaith007@gmail.com';
+$smtp_pass     = 'swlugqpubyhytlqg';
+$smtp_from     = 'martinfaith007@gmail.com';
+$smtp_fromName = 'Primex25 Website';
+$to            = 'info@primex25.com';   // destination you requested
+$subject       = "[Primex25 Enquiry {$ref}] {$data['interest']} — {$data['company']}";
 
-$mail_ok = @mail($to, $subject, $body, implode("\r\n", $headers));
+/**
+ * Simple SMTP send over SSL (port 465)
+ * Returns true on success, false on failure.
+ */
+function smtp_send($host, $port, $user, $pass, $from, $fromName, $to, $subject, $body, $replyToEmail, $replyToName) {
+    $errno = 0;
+    $errstr = '';
+    $timeout = 30;
+
+    $socket = @fsockopen('ssl://' . $host, $port, $errno, $errstr, $timeout);
+    if (!$socket) {
+        return false;
+    }
+
+    stream_set_timeout($socket, $timeout);
+
+    $read = function() use ($socket) {
+        $data = '';
+        while ($str = fgets($socket, 515)) {
+            $data .= $str;
+            if (isset($str[3]) && $str[3] === ' ') break;
+        }
+        return $data;
+    };
+
+    $write = function($cmd) use ($socket) {
+        fwrite($socket, $cmd . "\r\n");
+    };
+
+    // Greeting
+    $read();
+
+    $write('EHLO ' . gethostname());
+    $read();
+
+    $write('AUTH LOGIN');
+    $read();
+    $write(base64_encode($user));
+    $read();
+    $write(base64_encode($pass));
+    $auth_resp = $read();
+    if (strpos($auth_resp, '235') === false) {
+        fclose($socket);
+        return false;
+    }
+
+    $write('MAIL FROM:<' . $from . '>');
+    $read();
+
+    $write('RCPT TO:<' . $to . '>');
+    $read();
+
+    $write('DATA');
+    $read();
+
+    $headers  = 'From: ' . $fromName . ' <' . $from . ">\r\n";
+    $headers .= 'To: <' . $to . ">\r\n";
+    $headers .= 'Reply-To: ' . $replyToName . ' <' . $replyToEmail . ">\r\n";
+    $headers .= 'Subject: ' . $subject . "\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+    $headers .= "X-Mailer: Primex25-Enquiry-Form\r\n";
+    $headers .= "\r\n";
+
+    // Dot-stuffing for safety
+    $safe_body = str_replace("\n.", "\n..", $body);
+
+    $write($headers . $safe_body . "\r\n.");
+    $data_resp = $read();
+
+    $write('QUIT');
+    fclose($socket);
+
+    return (strpos($data_resp, '250') !== false);
+}
+
+$mail_ok = smtp_send(
+    $smtp_host,
+    $smtp_port,
+    $smtp_user,
+    $smtp_pass,
+    $smtp_from,
+    $smtp_fromName,
+    $to,
+    $subject,
+    $body,
+    $data['email'],
+    $data['fullName']
+);
 
 // Optional: log to file for backup (ensure directory is writable on server)
 $log_line = date('c') . " | {$ref} | {$data['email']} | {$data['company']} | {$data['interest']} | mail=" . ($mail_ok ? '1' : '0') . "\n";
 @file_put_contents(__DIR__ . '/enquiries.log', $log_line, FILE_APPEND | LOCK_EX);
 
 $_SESSION['enquiry_times'][] = $now;
+
+if (!$mail_ok) {
+    // Still show success to user (don't leak mail failure), but log shows mail=0
+    // You can change this to show an error if preferred:
+    // redirect_with(['error' => 'Could not send enquiry. Please email info@primex25.com directly.']);
+}
 
 redirect_with(['sent' => '1', 'ref' => $ref]);
